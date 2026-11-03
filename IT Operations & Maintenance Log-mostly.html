@@ -1,0 +1,1708 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Operations | Cyber Tech Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#030914;
+    --panel:rgba(8,22,42,.88);
+    --panel2:#0a1c33;
+    --blue:#168cff;
+    --cyan:#00e5ff;
+    --green:#00e69b;
+    --red:#ff5470;
+    --yellow:#ffc857;
+    --border:rgba(0,193,255,.25);
+    --text:#e6f5ff;
+    --muted:#83a5c5;
+}
+
+body{
+    margin:0;
+    padding:22px;
+    min-height:100vh;
+    color:var(--text);
+    font-family:'Rajdhani',sans-serif;
+    background:
+    radial-gradient(ellipse at 10% 10%,rgba(0,115,255,.18),transparent 35%),
+    radial-gradient(ellipse at 90% 85%,rgba(0,229,255,.12),transparent 35%),
+    linear-gradient(135deg,#020712,#07172b,#020914);
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+    background-image:
+    linear-gradient(rgba(0,174,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,174,255,.045) 1px,transparent 1px);
+    background-size:32px 32px;
+    mask-image:linear-gradient(to bottom,black,transparent 95%);
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:650px;
+    height:650px;
+    border:1px solid rgba(0,207,255,.08);
+    border-radius:50%;
+    top:10%;
+    left:50%;
+    transform:translateX(-50%);
+    box-shadow:
+    0 0 0 55px rgba(0,207,255,.018),
+    0 0 0 110px rgba(0,207,255,.015),
+    0 0 0 165px rgba(0,207,255,.012);
+    pointer-events:none;
+    z-index:-1;
+}
+
+.container{
+    max-width:1550px;
+    width:100%;
+    margin:auto;
+}
+
+/* HEADER */
+
+.header{
+    position:relative;
+    overflow:hidden;
+    padding:32px 20px;
+    margin-bottom:23px;
+    text-align:center;
+    border:1px solid rgba(0,207,255,.48);
+    border-radius:16px;
+    background:
+    linear-gradient(125deg,rgba(4,31,62,.97),rgba(4,13,29,.97),rgba(0,54,86,.85));
+    box-shadow:
+    0 0 25px rgba(0,145,255,.12),
+    inset 0 0 35px rgba(0,173,255,.07);
+}
+
+.header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:2px;
+    background:linear-gradient(90deg,transparent,#00e5ff,#fff,transparent);
+    animation:scan 4s linear infinite;
+}
+
+.header::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#00d9ff,transparent);
+}
+
+@keyframes scan{
+    to{left:100%}
+}
+
+.header-icons{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+    font-size:30px;
+    margin-bottom:15px;
+    filter:drop-shadow(0 0 9px rgba(0,200,255,.5));
+}
+
+.header h1{
+    margin:0;
+    color:#6ceaff;
+    font-family:'Orbitron',sans-serif;
+    font-size:clamp(19px,3vw,30px);
+    font-weight:800;
+    letter-spacing:2px;
+    text-shadow:0 0 18px rgba(0,211,255,.55);
+}
+
+.header p{
+    color:#b3d8f5;
+    font-size:16px;
+    letter-spacing:2px;
+    margin:12px 0;
+}
+
+.header-tag{
+    display:inline-block;
+    padding:8px 18px;
+    border:1px solid rgba(0,218,255,.4);
+    border-radius:30px;
+    background:rgba(0,159,255,.08);
+    color:#59e7ff;
+    font-size:12px;
+    letter-spacing:2px;
+    font-weight:700;
+}
+
+/* LIVE STATUS */
+
+.system-strip{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+    padding:12px 17px;
+    margin-bottom:22px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:rgba(5,20,39,.85);
+    color:#a8c9e6;
+    font-size:14px;
+}
+
+.live{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#00e69b;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.live-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#00e69b;
+    box-shadow:0 0 12px #00e69b;
+    animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+    50%{opacity:.35;box-shadow:0 0 2px #00e69b}
+}
+
+/* CARDS */
+
+.card{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:23px;
+    margin-bottom:22px;
+    box-shadow:
+    0 8px 30px rgba(0,0,0,.3),
+    inset 0 0 25px rgba(0,126,255,.025);
+    backdrop-filter:blur(12px);
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    top:-1px;
+    left:20px;
+    width:85px;
+    height:2px;
+    background:var(--cyan);
+    box-shadow:0 0 12px var(--cyan);
+}
+
+h2{
+    margin-top:0;
+    padding-bottom:13px;
+    border-bottom:1px solid rgba(0,199,255,.19);
+    color:#5ce6ff;
+    font-family:'Orbitron',sans-serif;
+    font-size:16px;
+    letter-spacing:1px;
+}
+
+.section-subtitle{
+    margin-top:-5px;
+    margin-bottom:21px;
+    color:#809fbd;
+    font-size:14px;
+}
+
+/* FORM */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+}
+
+.form-group{
+    min-width:0;
+}
+
+.form-group.full{
+    grid-column:1/-1;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+    color:#cceaff;
+    font-weight:700;
+}
+
+input,select,textarea{
+    width:100%;
+    min-width:0;
+    padding:13px;
+    border-radius:8px;
+    border:1px solid #234b70;
+    background:rgba(3,17,34,.95);
+    color:#e8f8ff;
+    font-family:'Rajdhani',sans-serif;
+    font-size:15px;
+    outline:none;
+    transition:.25s;
+}
+
+input:focus,select:focus,textarea:focus{
+    border-color:var(--cyan);
+    box-shadow:0 0 12px rgba(0,203,255,.18);
+}
+
+input::placeholder,textarea::placeholder{
+    color:#65829f;
+}
+
+select option{
+    background:#071a30;
+    color:white;
+}
+
+textarea{
+    resize:vertical;
+    min-height:90px;
+}
+
+/* TEAM */
+
+.team-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.team-list label{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    margin:0;
+    padding:10px 14px;
+    background:#081d35;
+    border:1px solid #254b6c;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:500;
+    transition:.25s;
+}
+
+.team-list label:hover{
+    border-color:var(--cyan);
+    background:#103451;
+    box-shadow:0 0 10px rgba(0,210,255,.12);
+}
+
+.team-list input{
+    width:auto;
+    margin:0;
+    accent-color:#00cfff;
+}
+
+/* BUTTONS */
+
+.btn-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:11px;
+    margin-top:21px;
+}
+
+button{
+    border:none;
+    border-radius:8px;
+    padding:12px 19px;
+    cursor:pointer;
+    font-family:'Rajdhani',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.4px;
+    transition:.25s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.18);
+}
+
+.save-btn{
+    color:white;
+    background:linear-gradient(120deg,#087bdb,#00a9ed);
+    box-shadow:0 0 13px rgba(0,155,255,.18);
+}
+
+.reset-btn{
+    background:#263f5d;
+    color:#e7f3ff;
+}
+
+.excel-btn{
+    background:linear-gradient(120deg,#00794e,#00b77a);
+    color:white;
+    box-shadow:0 0 13px rgba(0,230,155,.14);
+}
+
+.edit-btn{
+    background:#e5a832;
+    color:#17202b;
+}
+
+.delete-btn{
+    background:#cb354e;
+    color:white;
+}
+
+.small-btn{
+    padding:7px 10px;
+    font-size:12px;
+    margin:2px;
+}
+
+/* FILTER */
+
+.filter-row{
+    display:flex;
+    align-items:end;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+}
+
+.filter-row .form-group{
+    width:220px;
+    max-width:100%;
+}
+
+/* TABLE */
+
+.table-container{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    border:1px solid #234d71;
+    border-radius:9px;
+    -webkit-overflow-scrolling:touch;
+}
+
+table{
+    width:100%;
+    min-width:1100px;
+    border-collapse:collapse;
+}
+
+th{
+    background:linear-gradient(120deg,#083b65,#075a84);
+    color:#dffaff;
+    padding:14px 10px;
+    text-align:left;
+    font-size:13px;
+    letter-spacing:.5px;
+    white-space:nowrap;
+}
+
+td{
+    padding:12px 9px;
+    border-bottom:1px solid #193b58;
+    color:#dcecff;
+    font-size:14px;
+    vertical-align:middle;
+    overflow-wrap:anywhere;
+}
+
+tr:nth-child(even){
+    background:rgba(0,142,255,.035);
+}
+
+tr:hover{
+    background:rgba(0,199,255,.09);
+}
+
+th:last-child,td:last-child{
+    width:150px;
+    min-width:150px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+.status-done{
+    color:#51f5b1;
+    font-weight:700;
+}
+
+.status-pending{
+    color:#ff8498;
+    font-weight:700;
+}
+
+.status-progress{
+    color:#ffd36c;
+    font-weight:700;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#8caac5;
+}
+
+/* FOOTER */
+
+.footer{
+    text-align:center;
+    color:#6687a5;
+    font-size:13px;
+    padding:20px;
+    letter-spacing:1px;
+}
+
+.footer span{
+    color:#42dfff;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+    body{padding:10px}
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-group.full{
+        grid-column:auto;
+    }
+
+    .header{
+        padding:25px 12px;
+    }
+
+    .header-icons{
+        font-size:24px;
+        gap:16px;
+    }
+
+    .header p{
+        font-size:12px;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+    .filter-row{
+        align-items:stretch;
+    }
+
+    .filter-row .form-group{
+        width:100%;
+    }
+
+    .filter-row button{
+        flex:1;
+    }
+
+    .btn-row button{
+        flex:1;
+    }
+
+    .system-strip{
+        font-size:12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="header-icons">
+<span>🖥️</span>
+<span>⚡</span>
+<span>🌐</span>
+<span>🛠️</span>
+</div>
+
+<h1>IT OPERATIONS & MAINTENANCE LOG</h1>
+
+<p>DAILY CHECKLIST | TASK | COMPLAINT REGISTER</p>
+
+<div class="header-tag">
+◈ TECHNOLOGY • INFRASTRUCTURE • IT SUPPORT ◈
+</div>
+
+</div>
+
+<!-- SYSTEM STRIP -->
+
+<div class="system-strip">
+
+<div class="live">
+<span class="live-dot"></span>
+SYSTEM INTERFACE ACTIVE
+</div>
+
+<div>⚙ IT OPERATIONS CONTROL PANEL</div>
+
+<div id="systemDate"></div>
+
+</div>
+
+<!-- ADD REPORT -->
+
+<div class="card">
+
+<h2 id="formTitle">＋ NEXUS 360 | COMPLAINT REGISTER</h2>
+
+<p class="section-subtitle">
+Enter IT maintenance details and daily technical activities.
+</p>
+
+<form id="complaintForm">
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>📅 Date</label>
+<input type="date" id="date" required>
+</div>
+
+<div class="form-group">
+<label>🏨 Property</label>
+
+<select id="property" required>
+<option value="">Select Property</option>
+<option>Wyndham Ahmedabad Shela</option>
+<option>The Forum - Hotel</option>
+<option>The Forum - Convention</option>
+<option>Club O7 - Club & Convention</option>
+<option>CCTV WORK</option>
+<option>Server Room</option>
+<option>QR STICKER'S</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>⚙️ Description</label>
+
+<select id="complaint" required>
+<option value="">Select Description</option>
+<option>Door Locker</option>
+<option>Safe Locker</option>
+<option>Wi-Fi</option>
+<option>Telephone</option>
+<option>CCTV</option>
+<option>Desktop / Laptop</option>
+<option>Printer Cartridge</option>
+<option>Network / LAN</option>
+<option>Server</option>
+<option>Software / Application</option>
+<option>Audio & Visual</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>📍 Area / Location</label>
+<input type="text" id="area" placeholder="Enter area or location" required>
+</div>
+
+<div class="form-group full">
+<label>📝 Remarks</label>
+<textarea id="remarks" placeholder="Enter technical details / remarks"></textarea>
+</div>
+
+<div class="form-group">
+<label>🚦 Status</label>
+
+<select id="status" required>
+<option value="">Select Status</option>
+<option>Done</option>
+<option>In Progress</option>
+<option>Pending</option>
+</select>
+</div>
+
+<div class="form-group full">
+
+<label>👨‍💻 Done By (Select one or multiple)</label>
+
+<div class="team-list">
+
+<label>
+<input type="checkbox" name="doneBy" value="Mr. Rashid Ansari">
+Mr. Rashid Ansari
+</label>
+
+<label>
+<input type="checkbox" name="doneBy" value="Mr. Manoj">
+Mr. Manoj
+</label>
+
+<label>
+<input type="checkbox" name="doneBy" value="Mr. Santosh Safi">
+Mr. Santosh Safi
+</label>
+
+<label>
+<input type="checkbox" name="doneBy" value="Mr. Shivang Patel">
+Mr. Shivang Patel
+</label>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="btn-row">
+
+<button type="submit" class="save-btn" id="saveBtn">
+💾 SAVE REPORT
+</button>
+
+<button type="button" class="reset-btn" onclick="resetForm()">
+↻ CLEAR FORM
+</button>
+
+</div>
+
+</form>
+</div>
+
+<!-- REPORTS -->
+
+<div class="card">
+
+<h2>▣ IT TASK & COMPLAINT REPORTS</h2>
+
+<p class="section-subtitle">
+Monitor, manage and export all technical maintenance records.
+</p>
+
+<div class="filter-row">
+
+<div class="form-group">
+<label>📅 Filter by Date</label>
+<input type="date" id="filterDate">
+</div>
+
+<button class="save-btn" onclick="filterReports()">
+⌕ SEARCH
+</button>
+
+<button class="reset-btn" onclick="showAllReports()">
+▤ SHOW ALL
+</button>
+
+<button class="excel-btn" onclick="exportExcel()">
+⇩ DOWNLOAD EXCEL
+</button>
+
+</div>
+
+<div class="table-container">
+
+<table id="reportTable">
+
+<thead>
+<tr>
+<th>SR. NO.</th>
+<th>DATE</th>
+<th>PROPERTY</th>
+<th>AREA / LOCATION</th>
+<th>DESCRIPTION</th>
+<th>STATUS</th>
+<th>REMARKS</th>
+<th>DONE BY</th>
+<th>ACTION</th>
+</tr>
+</thead>
+
+<tbody id="reportBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<div class="footer">
+<span>◈ IT OPERATIONS & MAINTENANCE ◈</span>
+<br>
+TECHNOLOGY | INFRASTRUCTURE | SUPPORT | MAINTENANCE
+</div>
+
+</div>
+
+<script>
+
+// ========================================
+// STORAGE
+// ========================================
+
+const STORAGE_KEY = "complaintReportsV1";
+
+let reports = [];
+
+try{
+    reports = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if(!Array.isArray(reports)) reports = [];
+}catch(error){
+    reports = [];
+}
+
+let editingId = null;
+let currentFilter = "";
+
+const $ = id => document.getElementById(id);
+
+// ========================================
+// TODAY DATE
+// ========================================
+
+function todayDate(){
+
+    const d = new Date();
+    const offset = d.getTimezoneOffset();
+
+    return new Date(d.getTime() - offset * 60000)
+        .toISOString().slice(0,10);
+
+}
+
+$("date").value = todayDate();
+
+$("systemDate").textContent =
+    "📅 " + new Date().toLocaleDateString("en-IN",{
+        day:"2-digit",
+        month:"short",
+        year:"numeric"
+    });
+
+// ========================================
+// STORAGE
+// ========================================
+
+function saveStorage(){
+
+    try{
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(reports));
+    }catch(error){
+        alert("Storage error: " + error.message);
+    }
+
+}
+
+// ========================================
+// TEAM SELECTION
+// ========================================
+
+function getSelectedTeam(){
+
+    return Array.from(
+        document.querySelectorAll('input[name="doneBy"]:checked')
+    ).map(item => item.value);
+
+}
+
+function setSelectedTeam(names){
+
+    document.querySelectorAll('input[name="doneBy"]').forEach(item=>{
+        item.checked = names.includes(item.value);
+    });
+
+}
+
+// ========================================
+// RESET FORM
+// ========================================
+
+function resetForm(){
+
+    $("complaintForm").reset();
+
+    $("date").value = todayDate();
+
+    editingId = null;
+
+    $("formTitle").textContent = "＋ ADD NEW TASK / COMPLAINT";
+
+    $("saveBtn").textContent = "💾 SAVE REPORT";
+
+}
+
+// ========================================
+// SAVE / UPDATE REPORT
+// ========================================
+
+$("complaintForm").addEventListener("submit",function(e){
+
+    e.preventDefault();
+
+    const team = getSelectedTeam();
+
+    if(team.length === 0){
+        alert("Please select at least one Done By team member.");
+        return;
+    }
+
+    const record = {
+
+        id: editingId !== null ? editingId : Date.now(),
+
+        date: $("date").value,
+
+        property: $("property").value,
+
+        area: $("area").value.trim(),
+
+        complaint: $("complaint").value,
+
+        status: $("status").value,
+
+        remarks: $("remarks").value.trim(),
+
+        doneBy: team
+
+    };
+
+    if(editingId !== null){
+
+        const index = reports.findIndex(r=>r.id === editingId);
+
+        if(index !== -1){
+            reports[index] = record;
+        }
+
+        alert("Report updated successfully.");
+
+    }else{
+
+        reports.push(record);
+
+        alert("Report saved successfully.");
+
+    }
+
+    saveStorage();
+
+    resetForm();
+
+    renderReports();
+
+});
+
+// ========================================
+// SORT DATE WISE
+// ========================================
+
+function getSortedReports(list){
+
+    return [...list].sort((a,b)=>
+        String(b.date || "").localeCompare(String(a.date || ""))
+    );
+
+}
+
+// ========================================
+// DISPLAY REPORTS
+// ========================================
+
+function renderReports(){
+
+    let list = getSortedReports(reports);
+
+    if(currentFilter){
+        list = list.filter(r=>r.date === currentFilter);
+    }
+
+    const tbody = $("reportBody");
+
+    tbody.innerHTML = "";
+
+    if(list.length === 0){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="empty">
+                    ◈ NO REPORTS FOUND
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    list.forEach((r,index)=>{
+
+        const tr = document.createElement("tr");
+
+        let statusClass = "status-pending";
+
+        if(r.status === "Done"){
+            statusClass = "status-done";
+        }
+
+        if(r.status === "In Progress"){
+            statusClass = "status-progress";
+        }
+
+        const values = [
+
+            index+1,
+            r.date || "",
+            r.property || "",
+            r.area || "",
+            r.complaint || "",
+            r.status || "",
+            r.remarks || "",
+            Array.isArray(r.doneBy)
+                ? r.doneBy.join(", ")
+                : (r.doneBy || "")
+
+        ];
+
+        values.forEach((value,i)=>{
+
+            const td = document.createElement("td");
+
+            td.textContent = value;
+
+            if(i === 5){
+                td.className = statusClass;
+            }
+
+            tr.appendChild(td);
+
+        });
+
+        // EDIT BUTTON
+
+        const action = document.createElement("td");
+
+        const edit = document.createElement("button");
+
+        edit.textContent = "✏️ Edit";
+        edit.className = "edit-btn small-btn";
+        edit.onclick = ()=>editReport(r.id);
+
+        // DELETE BUTTON
+
+        const del = document.createElement("button");
+
+        del.textContent = "🗑️ Delete";
+        del.className = "delete-btn small-btn";
+        del.onclick = ()=>deleteReport(r.id);
+
+        action.appendChild(edit);
+        action.appendChild(del);
+
+        tr.appendChild(action);
+
+        tbody.appendChild(tr);
+
+    });
+
+}
+
+// ========================================
+// DATE FILTER
+// ========================================
+
+function filterReports(){
+
+    currentFilter = $("filterDate").value;
+
+    renderReports();
+
+}
+
+// ========================================
+// SHOW ALL
+// ========================================
+
+function showAllReports(){
+
+    currentFilter = "";
+
+    $("filterDate").value = "";
+
+    renderReports();
+
+}
+
+// ========================================
+// EDIT REPORT
+// ========================================
+
+function editReport(id){
+
+    const r = reports.find(item=>item.id === id);
+
+    if(!r) return;
+
+    $("date").value = r.date || todayDate();
+
+    $("property").value = r.property || "";
+
+    $("area").value = r.area || "";
+
+    $("complaint").value = r.complaint || "";
+
+    $("status").value = r.status || "";
+
+    $("remarks").value = r.remarks || "";
+
+    const names = Array.isArray(r.doneBy)
+        ? r.doneBy
+        : (r.doneBy ? r.doneBy.split(",").map(x=>x.trim()) : []);
+
+    setSelectedTeam(names);
+
+    editingId = id;
+
+    $("formTitle").textContent = "✏️ EDIT TASK / COMPLAINT";
+
+    $("saveBtn").textContent = "🔄 UPDATE REPORT";
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+// ========================================
+// DELETE REPORT
+// ========================================
+
+function deleteReport(id){
+
+    if(!confirm("Are you sure you want to delete this report?")){
+        return;
+    }
+
+    reports = reports.filter(r=>r.id !== id);
+
+    saveStorage();
+
+    renderReports();
+
+}
+
+// ========================================
+// PREMIUM CYBER TECH EXCEL EXPORT
+// ========================================
+
+async function exportExcel(){
+
+    let list = getSortedReports(reports);
+
+    if(currentFilter){
+        list = list.filter(r=>r.date === currentFilter);
+    }
+
+    if(!list.length){
+        alert("No reports available to export.");
+        return;
+    }
+
+    if(typeof ExcelJS === "undefined"){
+        alert("Excel library could not load. Check your internet connection.");
+        return;
+    }
+
+    const workbook = new ExcelJS.Workbook();
+
+    workbook.creator = "IT Operations & Maintenance";
+    workbook.created = new Date();
+
+    const sheet = workbook.addWorksheet("IT Maintenance Report",{
+        properties:{defaultRowHeight:25},
+        views:[{state:"frozen",ySplit:7}]
+    });
+
+    const FONT = "Aptos";
+
+    const C = {
+        navy:"FF07182D",
+        dark:"FF102D4A",
+        blue:"FF087FB9",
+        cyan:"FF00A6C9",
+        lightBlue:"FFEAF6FC",
+        white:"FFFFFFFF",
+        text:"FF26384A",
+        border:"FFD0E1EC",
+        green:"FF00804A",
+        greenBg:"FFDDF5E8",
+        yellow:"FFAA7100",
+        yellowBg:"FFFFF1CC",
+        red:"FFC62828",
+        redBg:"FFFFE1E1",
+        grey:"FFF1F5F9"
+    };
+
+    // COLUMN WIDTHS
+
+    sheet.columns = [
+        {key:"sr",width:9},
+        {key:"date",width:15},
+        {key:"property",width:29},
+        {key:"area",width:25},
+        {key:"complaint",width:30},
+        {key:"status",width:17},
+        {key:"remarks",width:48},
+        {key:"doneBy",width:28}
+    ];
+
+    // MAIN TITLE
+
+    sheet.mergeCells("A1:H1");
+
+    const title = sheet.getCell("A1");
+
+    title.value = "IT OPERATIONS & MAINTENANCE LOG";
+
+    title.font = {
+        name:FONT,
+        bold:true,
+        size:21,
+        color:{argb:C.white}
+    };
+
+    title.fill = {
+        type:"pattern",
+        pattern:"solid",
+        fgColor:{argb:C.navy}
+    };
+
+    title.alignment = {
+        horizontal:"center",
+        vertical:"middle"
+    };
+
+    sheet.getRow(1).height = 46;
+
+    // SUBTITLE
+
+    sheet.mergeCells("A2:H2");
+
+    const subtitle = sheet.getCell("A2");
+
+    subtitle.value = currentFilter
+        ? "DAILY TASK & COMPLAINT REPORT | " + currentFilter
+        : "DAILY CHECKLIST | TASK | COMPLAINT REGISTER";
+
+    subtitle.font = {
+        name:FONT,
+        bold:true,
+        size:12,
+        color:{argb:C.blue}
+    };
+
+    subtitle.fill = {
+        type:"pattern",
+        pattern:"solid",
+        fgColor:{argb:C.lightBlue}
+    };
+
+    subtitle.alignment = {
+        horizontal:"center",
+        vertical:"middle"
+    };
+
+    sheet.getRow(2).height = 29;
+
+    // SUMMARY DASHBOARD
+
+    const done = list.filter(r=>r.status === "Done").length;
+
+    const progress = list.filter(r=>r.status === "In Progress").length;
+
+    const pending = list.filter(r=>r.status === "Pending").length;
+
+    const summary = [
+        ["TOTAL RECORDS",list.length],
+        ["COMPLETED",done],
+        ["IN PROGRESS",progress],
+        ["PENDING",pending]
+    ];
+
+    const ranges = [
+        ["A3:B3","A4:B4"],
+        ["C3:D3","C4:D4"],
+        ["E3:F3","E4:F4"],
+        ["G3:H3","G4:H4"]
+    ];
+
+    ranges.forEach((range,i)=>{
+
+        sheet.mergeCells(range[0]);
+        sheet.mergeCells(range[1]);
+
+        const heading = sheet.getCell(range[0].split(":")[0]);
+
+        const value = sheet.getCell(range[1].split(":")[0]);
+
+        heading.value = summary[i][0];
+
+        value.value = summary[i][1];
+
+        heading.font = {
+            name:FONT,
+            bold:true,
+            size:10,
+            color:{argb:C.white}
+        };
+
+        heading.fill = {
+            type:"pattern",
+            pattern:"solid",
+            fgColor:{argb:C.blue}
+        };
+
+        heading.alignment = {
+            horizontal:"center",
+            vertical:"middle"
+        };
+
+        value.font = {
+            name:FONT,
+            bold:true,
+            size:20,
+            color:{
+                argb:i===1?C.green:
+                i===2?C.yellow:
+                i===3?C.red:C.navy
+            }
+        };
+
+        value.fill = {
+            type:"pattern",
+            pattern:"solid",
+            fgColor:{argb:C.grey}
+        };
+
+        value.alignment = {
+            horizontal:"center",
+            vertical:"middle"
+        };
+
+    });
+
+    sheet.getRow(3).height = 24;
+    sheet.getRow(4).height = 34;
+
+    // GENERATED INFORMATION
+
+    sheet.mergeCells("A5:H5");
+
+    sheet.getCell("A5").value =
+        "GENERATED ON: "+todayDate()+
+        "     |     TOTAL ENTRIES: "+list.length;
+
+    sheet.getCell("A5").font = {
+        name:FONT,
+        italic:true,
+        size:10,
+        color:{argb:"FF60758A"}
+    };
+
+    sheet.getCell("A5").alignment = {
+        horizontal:"center",
+        vertical:"middle"
+    };
+
+    sheet.getRow(5).height = 24;
+
+    // PROPERTY ORDER
+
+    const propertyOrder = [
+        "Wyndham Ahmedabad Shela",
+        "The Forum - Hotel",
+        "The Forum - Convention",
+        "Club O7 - Club & Convention",
+        "CCTV WORK",
+        "Server Room",
+        "Other"
+    ];
+
+    const groups = {};
+
+    list.forEach(r=>{
+
+        const property = r.property || "Other";
+
+        if(!groups[property]){
+            groups[property] = [];
+        }
+
+        groups[property].push(r);
+
+    });
+
+    const orderedProperties = [
+        ...propertyOrder.filter(p=>groups[p]),
+        ...Object.keys(groups)
+            .filter(p=>!propertyOrder.includes(p))
+            .sort()
+    ];
+
+    const headers = [
+        "SR. NO.",
+        "DATE",
+        "PROPERTY",
+        "AREA / LOCATION",
+        "TASK / COMPLAINT DETAILS",
+        "STATUS",
+        "REMARKS",
+        "DONE BY"
+    ];
+
+    let rowNumber = 7;
+    let grandTotal = 0;
+
+    // PROPERTY WISE SECTIONS
+
+    orderedProperties.forEach(property=>{
+
+        const propertyReports = getSortedReports(groups[property]);
+
+        grandTotal += propertyReports.length;
+
+        // SECTION TITLE
+
+        sheet.mergeCells(`A${rowNumber}:H${rowNumber}`);
+
+        const section = sheet.getCell(`A${rowNumber}`);
+
+        section.value =
+            "  ◈ "+property.toUpperCase()+
+            "     |     TOTAL RECORDS: "+propertyReports.length;
+
+        section.font = {
+            name:FONT,
+            bold:true,
+            size:12,
+            color:{argb:C.white}
+        };
+
+        section.fill = {
+            type:"pattern",
+            pattern:"solid",
+            fgColor:{argb:C.blue}
+        };
+
+        section.alignment = {
+            horizontal:"left",
+            vertical:"middle"
+        };
+
+        sheet.getRow(rowNumber).height = 33;
+
+        rowNumber++;
+
+        // TABLE HEADINGS
+
+        const headerRow = sheet.getRow(rowNumber);
+
+        headers.forEach((heading,i)=>{
+
+            const cell = headerRow.getCell(i+1);
+
+            cell.value = heading;
+
+            cell.font = {
+                name:FONT,
+                bold:true,
+                size:10,
+                color:{argb:C.white}
+            };
+
+            cell.fill = {
+                type:"pattern",
+                pattern:"solid",
+                fgColor:{argb:C.dark}
+            };
+
+            cell.alignment = {
+                horizontal:"center",
+                vertical:"middle",
+                wrapText:true
+            };
+
+            cell.border = {
+                top:{style:"thin",color:{argb:C.border}},
+                bottom:{style:"thin",color:{argb:C.border}},
+                left:{style:"thin",color:{argb:C.border}},
+                right:{style:"thin",color:{argb:C.border}}
+            };
+
+        });
+
+        headerRow.height = 35;
+
+        rowNumber++;
+
+        // REPORT DATA
+
+        propertyReports.forEach((r,index)=>{
+
+            const row = sheet.getRow(rowNumber);
+
+            const doneBy = Array.isArray(r.doneBy)
+                ? r.doneBy.join(", ")
+                : (r.doneBy || "");
+
+            row.values = [
+                index+1,
+                r.date || "",
+                r.property || "",
+                r.area || "",
+                r.complaint || "",
+                r.status || "",
+                r.remarks || "",
+                doneBy
+            ];
+
+            row.height = 39;
+
+            row.eachCell({includeEmpty:true},cell=>{
+
+                cell.font = {
+                    name:FONT,
+                    size:10,
+                    color:{argb:C.text}
+                };
+
+                cell.alignment = {
+                    vertical:"middle",
+                    horizontal:"left",
+                    wrapText:true
+                };
+
+                cell.border = {
+                    top:{style:"thin",color:{argb:C.border}},
+                    bottom:{style:"thin",color:{argb:C.border}},
+                    left:{style:"thin",color:{argb:C.border}},
+                    right:{style:"thin",color:{argb:C.border}}
+                };
+
+                cell.fill = {
+                    type:"pattern",
+                    pattern:"solid",
+                    fgColor:{
+                        argb:index%2===0?C.white:C.lightBlue
+                    }
+                };
+
+            });
+
+            // CENTER SERIAL AND DATE
+
+            [1,2].forEach(col=>{
+
+                row.getCell(col).alignment = {
+                    horizontal:"center",
+                    vertical:"middle"
+                };
+
+            });
+
+            // STATUS COLOR
+
+            const statusCell = row.getCell(6);
+
+            let statusColor = C.red;
+            let statusBg = C.redBg;
+
+            if(r.status==="Done"){
+
+                statusColor=C.green;
+                statusBg=C.greenBg;
+
+            }else if(r.status==="In Progress"){
+
+                statusColor=C.yellow;
+                statusBg=C.yellowBg;
+
+            }
+
+            statusCell.font = {
+                name:FONT,
+                bold:true,
+                size:10,
+                color:{argb:statusColor}
+            };
+
+            statusCell.fill = {
+                type:"pattern",
+                pattern:"solid",
+                fgColor:{argb:statusBg}
+            };
+
+            statusCell.alignment = {
+                horizontal:"center",
+                vertical:"middle"
+            };
+
+            rowNumber++;
+
+        });
+
+        rowNumber++;
+
+    });
+
+    // GRAND TOTAL
+
+    sheet.mergeCells(`A${rowNumber}:H${rowNumber}`);
+
+    const total = sheet.getCell(`A${rowNumber}`);
+
+    total.value = "GRAND TOTAL RECORDS: "+grandTotal;
+
+    total.font = {
+        name:FONT,
+        bold:true,
+        size:13,
+        color:{argb:C.white}
+    };
+
+    total.fill = {
+        type:"pattern",
+        pattern:"solid",
+        fgColor:{argb:C.navy}
+    };
+
+    total.alignment = {
+        horizontal:"right",
+        vertical:"middle",
+        indent:1
+    };
+
+    sheet.getRow(rowNumber).height = 36;
+
+    // PRINT SETTINGS
+
+    sheet.pageSetup = {
+        paperSize:9,
+        orientation:"landscape",
+        fitToPage:true,
+        fitToWidth:1,
+        fitToHeight:0,
+        margins:{
+            left:0.25,
+            right:0.25,
+            top:0.5,
+            bottom:0.5,
+            header:0.2,
+            footer:0.2
+        }
+    };
+
+    sheet.pageSetup.printTitlesRow = "1:7";
+
+    sheet.pageSetup.horizontalDpi = 300;
+    sheet.pageSetup.verticalDpi = 300;
+
+    // FOOTER
+
+    sheet.headerFooter.oddFooter =
+        "&LIT OPERATIONS & MAINTENANCE&CPage &P of &N&RConfidential";
+
+    sheet.headerFooter.oddHeader =
+        "&RIT MAINTENANCE REPORT";
+
+    // EXCEL DOWNLOAD
+
+    try{
+
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        const blob = new Blob([buffer],{
+            type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        });
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        link.download = currentFilter
+            ? `IT_Maintenance_Report_${currentFilter}.xlsx`
+            : "IT_Operations_Maintenance_Report.xlsx";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        setTimeout(()=>URL.revokeObjectURL(url),1500);
+
+        alert("Premium Cyber Tech Excel Report Exported Successfully!");
+
+    }catch(error){
+
+        alert("Excel export failed: "+error.message);
+
+        console.error(error);
+
+    }
+
+}
+
+// ========================================
+// INITIAL LOAD
+// ========================================
+
+renderReports();
+
+</script>
+
+</body>
+</html>
